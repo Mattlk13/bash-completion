@@ -4,7 +4,8 @@ AM_RUNTESTFLAGS = --outdir log --ignore $(PACKAGE).log
 
 SUBDIRS = t
 
-EXTRA_DIST = completion \
+EXTRA_DIST = cmd-list \
+	     completion \
 	     config \
 	     fixtures \
 	     lib \
