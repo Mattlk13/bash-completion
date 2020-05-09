@@ -3,6 +3,7 @@ import os
 import re
 import shlex
 import subprocess
+import time
 from typing import Callable, Iterable, Iterator, List, Optional, Tuple
 
 import pexpect
@@ -402,6 +403,9 @@ class CompletionResult(Iterable[str]):
     def endswith(self, suffix: str) -> bool:
         return self.output.endswith(suffix)
 
+    def startswith(self, prefix: str) -> bool:
+        return self.output.startswith(prefix)
+
     def __eq__(self, expected: object) -> bool:
         """
         Returns True if completion contains expected items, and no others.
@@ -490,6 +494,8 @@ def assert_complete(
             "export %s" % " ".join("%s=%s" % (k, v) for k, v in env.items()),
         )
     bash.send(cmd + "\t")
+    # Sleep a bit if requested, to avoid `.*` matching too early
+    time.sleep(kwargs.get("sleep_after_tab", 0))
     bash.expect_exact(cmd)
     bash.send(MAGIC_MARK)
     got = bash.expect(
@@ -511,7 +517,11 @@ def assert_complete(
         result = CompletionResult(output)
     elif got == 2:
         output = bash.match.group(1)
-        result = CompletionResult(output, [shlex.split(cmd + output)[-1]])
+        result = CompletionResult(
+            output,
+            # Note that this causes returning the sole completion *unescaped*
+            [shlex.split(cmd + output)[-1]],
+        )
     else:
         # TODO: warn about EOF/TIMEOUT?
         result = CompletionResult("", [])

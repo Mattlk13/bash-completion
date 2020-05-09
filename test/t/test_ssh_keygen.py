@@ -23,3 +23,37 @@ class TestSshKeygen:
         assert completion
         assert not any("," in x for x in completion)
         # TODO check that these are hostnames
+
+    @pytest.mark.complete("ssh-keygen -Y foo -n ")
+    def test_n_with_Y(self, completion):
+        assert not completion
+
+    @pytest.mark.complete("ssh-keygen -r ")
+    def test_r_without_Y(self, completion):
+        assert not completion
+
+    @pytest.mark.complete("ssh-keygen -Y foo -r ")
+    def test_r_with_Y(self, completion):
+        assert "ssh/" in completion
+
+    @pytest.mark.complete("ssh-keygen -t ecdsa -b ")
+    def test_ecdsa_b(self, completion):
+        assert completion
+
+    @pytest.mark.complete("ssh-keygen -t ecdsa-sk -b ")
+    def test_ecdsa_sk_b(self, completion):
+        assert not completion
+
+    @pytest.mark.complete("ssh-keygen -O ")
+    def test_O(self, completion):
+        assert completion
+        assert any(x.endswith("=") for x in completion)
+
+    @pytest.mark.complete("ssh-keygen -O force-command=bas")
+    def test_O_force_command(self, completion):
+        assert completion
+        assert not completion.startswith("force-command=")
+
+    @pytest.mark.complete("ssh-keygen -O unknown=")
+    def test_O_unknown(self, completion):
+        assert not completion

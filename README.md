@@ -7,7 +7,7 @@
 bash-completion is a collection of command line command completions for the
 [Bash shell](https://www.gnu.org/software/bash/), collection of helper
 functions to assist in creating new completions, and set of facilities for
-loading completions on demand as well as installing them.
+loading completions automatically on demand, as well as installing them.
 
 ## Installation
 
@@ -35,8 +35,9 @@ standard commands for GNU autotools packages:
 autoreconf -i  # if not installing from prepared release tarball
 ./configure
 make
-make check # optional, requires python3 with pytest >= 3.6 and pexpect, dejagnu, and tcllib
-make install # as root
+make check     # optional, requires python3 with pytest >= 3.6 and
+               # pexpect, dejagnu, and tcllib
+make install   # as root
 ```
 
 These commands install the completions and helpers, as well as a
@@ -69,7 +70,6 @@ if [ -f /sw/etc/bash_completion ]; then
 fi
 ```
 
-
 ## Troubleshooting
 
 If you find that a given function is producing errors or does not work
@@ -83,7 +83,6 @@ To debug dynamic loading of a completion, tracing needs to be turned
 on before the debugged completion is attempted the first time. The
 easiest way to do this is to start a new shell session, and to turn
 tracing on in it before doing anything else there.
-
 
 ## Known problems
 
@@ -110,7 +109,6 @@ tracing on in it before doing anything else there.
    helper function used by `mutt` completion, where the function calls
    itself recursively. This seems to confuse bash and it issues
    spurious warnings if `nounset` is set.
-
 
 ## FAQ
 
@@ -143,7 +141,8 @@ A. Install a local completion of your own appropriately for the desired
 A. Put them in the `completions` subdir of `$BASH_COMPLETION_USER_DIR`
    (defaults to `$XDG_DATA_HOME/bash-completion` or
     `~/.local/share/bash-completion`
-   if `$XDG_DATA_HOME` is not set) to have them loaded on demand.
+   if `$XDG_DATA_HOME` is not set) to have them loaded automatically
+   on demand when the respective command is being completed.
    See also the next question's answer for considerations for these
    files' names, they apply here as well. Alternatively, you can write
    them directly in `~/.bash_completion` which is loaded eagerly by
@@ -158,20 +157,20 @@ A. Install it in one of the directories pointed to by
    alternatives:
 
    - The recommended directory is `completionsdir`, which you can get with
-   `pkg-config --variable=completionsdir bash-completion`. From this
-   directory, completions are loaded on-demand based on invoked commands' names,
-   so be sure to name your completion file accordingly, and to include
-   (for example) symbolic links in case the file provides completions
-   for more than one command.
+     `pkg-config --variable=completionsdir bash-completion`. From this
+     directory, completions are automatically loaded on demand based on invoked
+     commands' names, so be sure to name your completion file accordingly, and
+     to include (for example) symbolic links in case the file provides
+     completions for more than one command.
    - The other directory (which only present for backwards compatibility)
      is `compatdir` (get it with
-   `pkg-config --variable=compatdir bash-completion`) from which files
-   are loaded when `bash_completion` is loaded.
+     `pkg-config --variable=compatdir bash-completion`) from which files
+     are loaded when `bash_completion` is loaded.
 
    For packages using GNU autotools the installation can be handled
    for example like this in `configure.ac`:
 
-   ```
+   ```m4
    PKG_CHECK_VAR(bashcompdir, [bash-completion], [completionsdir], ,
      bashcompdir="${sysconfdir}/bash_completion.d")
    AC_SUBST(bashcompdir)
@@ -187,7 +186,7 @@ A. Install it in one of the directories pointed to by
    For cmake we ship the `bash-completion-config.cmake` and
    `bash-completion-config-version.cmake` files. Example usage:
 
-   ```
+   ```cmake
    find_package(bash-completion)
    if(BASH_COMPLETION_FOUND)
      message(STATUS
@@ -228,7 +227,7 @@ A. Define `$COMP_CONFIGURE_HINTS`. Setting this to anything will
 
 **Q. When doing tar completion on a file within a tar file like this:**
 
-   ```
+   ```shell
    tar tzvf foo.tar.gz <Tab>
    ```
 
@@ -334,21 +333,21 @@ A. The `readline(3)` library offers a few settings that can make tab
    For example, try putting the following in either `/etc/inputrc` or
    `~/.inputrc`:
 
-   ```
+   ```inputrc
    set show-all-if-ambiguous on
    ```
 
    This will allow single tab completion as opposed to requiring a
    double tab. This makes things much more pleasant, in our opinion.
 
-   ```
+   ```inputrc
    set visible-stats on
    ```
 
    This will suffix each returned file completion with a character
    denoting its type, in a similar way to `ls(1)` with `-F` or `--classify`.
 
-   ```
+   ```inputrc
    set page-completions off
    ```
 
@@ -360,4 +359,4 @@ A. The `readline(3)` library offers a few settings that can make tab
 A. Absolutely not. zsh has an extremely sophisticated completion system
    that offers many features absent from the bash implementation. Its
    users often cannot resist pointing this out. More information can
-   be found at: http://www.zsh.org/
+   be found at <https://www.zsh.org/>.
